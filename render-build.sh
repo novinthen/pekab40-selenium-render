@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
+set -o errexit
+
+# Print versions for debugging
+echo "Using Python version: $(python --version)"
+echo "Using pip version: $(pip --version)"
+
+# Install Python packages
+pip install --upgrade pip
+pip install -r requirements.txt
 
 # Fail on error
 set -o errexit
