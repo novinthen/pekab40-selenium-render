@@ -1,4 +1,5 @@
 flask
+selenium
 pandas
 openpyxl
-selenium
+webdriver-manager
