@@ -8,6 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import tempfile
 import os
+import shutil
 
 app = Flask(__name__)
 
@@ -25,13 +26,18 @@ def upload_file():
     if 'IC' not in df.columns:
         return "Missing 'IC' column in Excel file", 400
 
+    # ✅ Setup Selenium with Chrome + correct binary paths
     chrome_options = Options()
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.binary_location = "/opt/render/project/.render/chrome/opt/google/chrome/google-chrome"
 
-    service = Service("/opt/render/project/.render/chromedriver/chromedriver")
+    driver_path = "/opt/render/project/.render/chromedriver/chromedriver"
+    if not os.path.exists(driver_path):
+        return "ChromeDriver not found. Check render-build.sh", 500
+
+    service = Service(executable_path=driver_path)
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
     results = []
@@ -56,6 +62,7 @@ def upload_file():
         results.append(status)
 
     driver.quit()
+
     df["Eligibility Status"] = results
     df["Raw HTML"] = raw_html
 
