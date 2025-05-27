@@ -1,4 +1,3 @@
-
 from flask import Flask, request, send_file, render_template
 import pandas as pd
 from selenium import webdriver
@@ -7,10 +6,8 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
 import tempfile
 import os
-from shutil import which
 
 app = Flask(__name__)
 
@@ -33,7 +30,8 @@ def upload_file():
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.binary_location = "/opt/render/project/.render/chrome/opt/google/chrome/google-chrome"
-    service = Service(ChromeDriverManager().install())
+
+    service = Service("/opt/render/project/.render/chromedriver/chromedriver")
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
     results = []
@@ -50,12 +48,11 @@ def upload_file():
             driver.find_element(By.ID, "btnSemak").click()
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "status")))
             status = driver.find_element(By.ID, "status").text
-        except Exception:
+        except Exception as e:
             status = "Error"
             raw_html.append(driver.page_source[:1000])
         else:
             raw_html.append(driver.page_source[:1000])
-
         results.append(status)
 
     driver.quit()
