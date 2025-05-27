@@ -1,16 +1,19 @@
 #!/usr/bin/env bash
 
-# Install Chromium (for Selenium)
-CHROME_VERSION=136.0.0.0
-
+# Install Chrome
 mkdir -p .render/chrome
-curl -sSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o chrome.deb
-dpkg -x chrome.deb .render/chrome/
-mv .render/chrome/opt/google/chrome .render/chrome/
-rm -rf chrome.deb
+cd .render/chrome
+wget https://storage.googleapis.com/chrome-for-testing-public/136.0.7103.113/linux64/chrome-linux64.zip
+unzip chrome-linux64.zip
+mv chrome-linux64/* .
+rm -rf chrome-linux64.zip chrome-linux64
+cd ../..
 
-# Make Chrome binary path available
-echo "CHROME_BINARY_PATH=.render/chrome/google-chrome" > .env
-
-# ✅ Install Python dependencies
-pip install -r requirements.txt
+# Install ChromeDriver
+mkdir -p .render/chromedriver
+cd .render/chromedriver
+wget https://storage.googleapis.com/chrome-for-testing-public/136.0.7103.113/linux64/chromedriver-linux64.zip
+unzip chromedriver-linux64.zip
+mv chromedriver-linux64/chromedriver .
+chmod +x chromedriver
+rm -rf chromedriver-linux64.zip chromedriver-linux64
