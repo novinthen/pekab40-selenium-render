@@ -14,4 +14,3 @@ echo "CHROME_BINARY_PATH=.render/chrome/google-chrome" > .env
 
 # ✅ Install Python dependencies
 pip install -r requirements.txt
-
