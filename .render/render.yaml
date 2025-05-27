@@ -1,0 +1,11 @@
+
+services:
+  - type: web
+    name: pekab40-selenium-checker
+    env: python
+    plan: free
+    buildCommand: bash render-build.sh
+    startCommand: python app.py
+    envVars:
+      - key: PORT
+        value: 10000
