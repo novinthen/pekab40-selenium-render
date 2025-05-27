@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# ✅ Install Python packages
+pip install -r requirements.txt
+
+# ...then install Chrome and Chromedriver
+
+
 # Install Chrome
 mkdir -p .render/chrome
 cd .render/chrome
