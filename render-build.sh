@@ -1,13 +1,17 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Install Chrome for Selenium
-echo "Installing Chrome..."
+# Install Chromium (for Selenium)
+CHROME_VERSION=136.0.0.0
 
-apt-get update
-apt-get install -y wget gnupg unzip
-wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
-sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
-apt-get update
-apt-get install -y google-chrome-stable
+mkdir -p .render/chrome
+curl -sSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o chrome.deb
+dpkg -x chrome.deb .render/chrome/
+mv .render/chrome/opt/google/chrome .render/chrome/
+rm -rf chrome.deb
 
-echo "Chrome installed successfully."
+# Make Chrome binary path available
+echo "CHROME_BINARY_PATH=.render/chrome/google-chrome" > .env
+
+# ✅ Install Python dependencies
+pip install -r requirements.txt
+
