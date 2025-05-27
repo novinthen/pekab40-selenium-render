@@ -1,21 +1,29 @@
 #!/usr/bin/env bash
 
-# Install Python dependencies
-pip install -r requirements.txt
+# Fail on error
+set -o errexit
+
+# Install dependencies
+apt-get update
+apt-get install -y wget unzip curl gnupg
 
 # Install Chrome
-mkdir -p /opt/render/project/.render/chrome
-cd /opt/render/project/.render/chrome
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-apt-get update && apt-get install -y ./google-chrome-stable_current_amd64.deb
+wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor > /etc/apt/trusted.gpg.d/google.gpg
+echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list
+apt-get update
+apt-get install -y google-chrome-stable
 
-# Set environment variables
-export CHROME_BIN=/usr/bin/google-chrome
-export PATH=$PATH:/usr/bin
+# Get Chrome version
+CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
 
-# Install matching ChromeDriver
-CHROME_VERSION=$(google-chrome --version | grep -oP "\d+\.\d+\.\d+")
-wget -N https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/${CHROME_VERSION}/linux64/chromedriver-linux64.zip -P ~/
-unzip -o ~/chromedriver-linux64.zip -d ~/chromedriver
-mv -f ~/chromedriver/chromedriver /usr/local/bin/chromedriver
-chmod 755 /usr/local/bin/chromedriver
+# Download matching ChromeDriver
+CHROMEDRIVER_VERSION=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json" | jq -r --arg ver "$CHROME_VERSION" '.versions[] | select(.version | startswith($ver)) | .version' | head -n 1)
+
+# Download and extract ChromeDriver
+wget -O chromedriver.zip "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/${CHROMEDRIVER_VERSION}/linux64/chromedriver-linux64.zip"
+unzip chromedriver.zip
+mv chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
+chmod +x /usr/local/bin/chromedriver
+
+# Clean up
+rm -rf chromedriver.zip chromedriver-linux64
